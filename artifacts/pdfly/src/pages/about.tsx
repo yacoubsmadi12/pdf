@@ -25,8 +25,12 @@ export default function AboutPage() {
       <main className="flex-1">
         <section className="py-16 md:py-24 border-b bg-muted/20">
           <div className="container mx-auto px-4 max-w-3xl text-center">
-            <div className="w-24 h-24 rounded-full bg-primary/10 border-4 border-primary mx-auto mb-6 flex items-center justify-center">
-              <span className="text-3xl font-bold text-primary">YS</span>
+            <div className="w-36 h-36 rounded-full border-4 border-primary mx-auto mb-6 overflow-hidden shadow-xl">
+              <img
+                src="/developer.png"
+                alt="Eng. Yacoub Smadi"
+                className="w-full h-full object-cover object-top"
+              />
             </div>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Eng. Yacoub Smadi</h1>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
