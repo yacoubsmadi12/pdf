@@ -3,13 +3,17 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: PDFly PDF Tools API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: tools
+    description: PDF tool metadata
+  - name: pdf
+    description: PDF processing operations
 paths:
   /healthz:
     get:
@@ -24,6 +28,428 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /tools:
+    get:
+      operationId: listTools
+      tags: [tools]
+      summary: List all PDF tools
+      description: Returns metadata for all available PDF tools
+      responses:
+        "200":
+          description: List of tools
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Tool"
+
+  /pdf/merge:
+    post:
+      operationId: mergePdf
+      tags: [pdf]
+      summary: Merge PDF files
+      description: Merges multiple PDF files into one
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/MergeInput"
+      responses:
+        "200":
+          description: Merged PDF file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/split:
+    post:
+      operationId: splitPdf
+      tags: [pdf]
+      summary: Split PDF file
+      description: Splits a PDF into individual pages or ranges, returns a ZIP
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SplitInput"
+      responses:
+        "200":
+          description: ZIP archive of split PDFs
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/compress:
+    post:
+      operationId: compressPdf
+      tags: [pdf]
+      summary: Compress PDF file
+      description: Reduces the file size of a PDF
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CompressInput"
+      responses:
+        "200":
+          description: Compressed PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/to-word:
+    post:
+      operationId: pdfToWord
+      tags: [pdf]
+      summary: Convert PDF to Word
+      description: Converts a PDF file to a .docx document
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SinglePdfInput"
+      responses:
+        "200":
+          description: Word document
+          content:
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/to-excel:
+    post:
+      operationId: pdfToExcel
+      tags: [pdf]
+      summary: Convert PDF to Excel
+      description: Converts a PDF file to a .xlsx spreadsheet
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SinglePdfInput"
+      responses:
+        "200":
+          description: Excel spreadsheet
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/to-ppt:
+    post:
+      operationId: pdfToPpt
+      tags: [pdf]
+      summary: Convert PDF to PowerPoint
+      description: Converts a PDF file to a .pptx presentation
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SinglePdfInput"
+      responses:
+        "200":
+          description: PowerPoint presentation
+          content:
+            application/vnd.openxmlformats-officedocument.presentationml.presentation:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /office/to-pdf:
+    post:
+      operationId: officeToPdf
+      tags: [pdf]
+      summary: Convert Office file to PDF
+      description: Converts Word, Excel, or PowerPoint file to PDF
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/OfficeInput"
+      responses:
+        "200":
+          description: Converted PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/rotate:
+    post:
+      operationId: rotatePdf
+      tags: [pdf]
+      summary: Rotate PDF pages
+      description: Rotates pages in a PDF by a specified angle
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/RotateInput"
+      responses:
+        "200":
+          description: Rotated PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/watermark:
+    post:
+      operationId: watermarkPdf
+      tags: [pdf]
+      summary: Add watermark to PDF
+      description: Adds a text or image watermark to all pages of a PDF
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/WatermarkInput"
+      responses:
+        "200":
+          description: Watermarked PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/page-numbers:
+    post:
+      operationId: addPageNumbers
+      tags: [pdf]
+      summary: Add page numbers to PDF
+      description: Adds page numbers to all pages of a PDF
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/PageNumbersInput"
+      responses:
+        "200":
+          description: PDF with page numbers
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/unlock:
+    post:
+      operationId: unlockPdf
+      tags: [pdf]
+      summary: Unlock PDF
+      description: Removes password protection from a PDF
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UnlockInput"
+      responses:
+        "200":
+          description: Unlocked PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/protect:
+    post:
+      operationId: protectPdf
+      tags: [pdf]
+      summary: Protect PDF with password
+      description: Adds password protection to a PDF
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProtectInput"
+      responses:
+        "200":
+          description: Password-protected PDF
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/extract-images:
+    post:
+      operationId: extractImages
+      tags: [pdf]
+      summary: Extract images from PDF
+      description: Extracts all images from a PDF, returns a ZIP archive
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SinglePdfInput"
+      responses:
+        "200":
+          description: ZIP archive of extracted images
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /pdf/to-jpg:
+    post:
+      operationId: pdfToJpg
+      tags: [pdf]
+      summary: Convert PDF to JPG
+      description: Converts each PDF page to a JPG image, returns a ZIP archive
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/SinglePdfInput"
+      responses:
+        "200":
+          description: ZIP archive of JPG images
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /img/to-pdf:
+    post:
+      operationId: jpgToPdf
+      tags: [pdf]
+      summary: Convert JPG images to PDF
+      description: Combines one or more JPG images into a single PDF
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ImagesToPdfInput"
+      responses:
+        "200":
+          description: PDF from images
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +460,187 @@ components:
       required:
         - status
 
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    Tool:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        category:
+          type: string
+        route:
+          type: string
+        acceptedFormats:
+          type: array
+          items:
+            type: string
+        outputFormat:
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - icon
+        - category
+        - route
+        - acceptedFormats
+        - outputFormat
+
+    SinglePdfInput:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: PDF file to process
+      required:
+        - file
+
+    MergeInput:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: string
+            format: binary
+          description: PDF files to merge (in order)
+      required:
+        - files
+
+    SplitInput:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        ranges:
+          type: string
+          description: Page ranges to extract, e.g. "1-3,5,7-9". Leave empty to split all pages.
+      required:
+        - file
+
+    CompressInput:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        level:
+          type: string
+          enum: [low, medium, high]
+          description: Compression level
+      required:
+        - file
+
+    OfficeInput:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+          description: Word, Excel, or PowerPoint file
+      required:
+        - file
+
+    RotateInput:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        angle:
+          type: integer
+          enum: [90, 180, 270]
+          description: Rotation angle in degrees
+        pages:
+          type: string
+          description: Pages to rotate, e.g. "1,3,5" or "all"
+      required:
+        - file
+        - angle
+
+    WatermarkInput:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        text:
+          type: string
+          description: Watermark text
+        opacity:
+          type: number
+          description: Opacity from 0 to 1
+        fontSize:
+          type: integer
+          description: Font size in points
+      required:
+        - file
+        - text
+
+    PageNumbersInput:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        position:
+          type: string
+          enum: [bottom-center, bottom-right, bottom-left, top-center, top-right, top-left]
+        startFrom:
+          type: integer
+          description: Starting page number
+      required:
+        - file
+
+    UnlockInput:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        password:
+          type: string
+          description: Current PDF password
+      required:
+        - file
+        - password
+
+    ProtectInput:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        password:
+          type: string
+          description: Password to set on the PDF
+      required:
+        - file
+        - password
+
+    ImagesToPdfInput:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: string
+            format: binary
+          description: Image files to combine into PDF
+      required:
+        - files
