@@ -15,12 +15,14 @@ async function buildAll() {
   await rm(distDir, { recursive: true, force: true });
 
   // Build the Vercel serverless handler (exports the Express app, no listen())
+  // Output goes directly to /api/ so Vercel can bundle it with the function
+  const workspaceRoot = path.resolve(artifactDir, "../..");
   await esbuild({
     entryPoints: [path.resolve(artifactDir, "src/app.ts")],
     platform: "node",
     bundle: true,
     format: "esm",
-    outfile: path.resolve(distDir, "api-handler.mjs"),
+    outfile: path.resolve(workspaceRoot, "api/handler.mjs"),
     logLevel: "info",
     external: [
       "*.node", "sharp", "better-sqlite3", "sqlite3", "canvas", "bcrypt",
