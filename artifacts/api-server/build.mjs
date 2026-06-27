@@ -39,7 +39,7 @@ async function buildAll() {
       "realm", "ref-napi", "rocksdb", "sass-embedded", "sequelize",
       "serialport", "snappy", "tinypool", "usb", "workerd", "wrangler",
       "zeromq", "zeromq-prebuilt", "playwright", "puppeteer", "puppeteer-core",
-      "electron",
+      "electron", "pdfjs-dist", "pdf-parse",
     ],
     sourcemap: false,
     banner: {
@@ -141,6 +141,8 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
       "puppeteer",
       "puppeteer-core",
       "electron",
+      "pdfjs-dist",
+      "pdf-parse",
     ],
     sourcemap: "linked",
     plugins: [

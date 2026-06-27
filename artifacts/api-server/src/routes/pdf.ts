@@ -9,6 +9,49 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 
+// ─── PDF text extraction ──────────────────────────────────────────────────────
+async function extractPdfText(buffer: Buffer): Promise<string> {
+  // Primary: pdftotext (poppler-utils) — fast, reliable, no browser deps
+  try {
+    const tmpFile = path.join(os.tmpdir(), `pdf-${Date.now()}-${Math.random().toString(36).slice(2)}.pdf`);
+    await fs.promises.writeFile(tmpFile, buffer);
+    try {
+      const { stdout } = await execAsync(`pdftotext -layout "${tmpFile}" -`);
+      return stdout;
+    } finally {
+      fs.promises.unlink(tmpFile).catch(() => {});
+    }
+  } catch {
+    // Fallback: pdfjs-dist (works in serverless environments without pdftotext)
+    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs" as any);
+    // Point workerSrc to the actual worker file relative to this module
+    const workerUrl = new URL(
+      "../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs",
+      import.meta.url,
+    );
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl.href;
+    const data = new Uint8Array(buffer);
+    const loadingTask = pdfjsLib.getDocument({
+      data,
+      verbosity: 0,
+      useWorkerFetch: false,
+      isEvalSupported: false,
+      useSystemFonts: true,
+    });
+    const pdfDoc = await loadingTask.promise;
+    let fullText = "";
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items
+        .map((item: any) => ("str" in item ? item.str : ""))
+        .join(" ");
+      fullText += pageText + "\n";
+    }
+    return fullText;
+  }
+}
+
 const execAsync = promisify(exec);
 const router = Router();
 
@@ -481,9 +524,7 @@ router.post("/pdf/to-word", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return sendError(res, 400, "No PDF file provided.");
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pdfParse = require("pdf-parse") as (buf: Buffer) => Promise<{ text: string }>;
-    const data = await pdfParse(req.file.buffer);
+    const data = { text: await extractPdfText(req.file.buffer) };
 
     const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx");
 
@@ -532,9 +573,7 @@ router.post("/pdf/to-excel", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return sendError(res, 400, "No PDF file provided.");
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pdfParseXl = require("pdf-parse") as (buf: Buffer) => Promise<{ text: string }>;
-    const data = await pdfParseXl(req.file.buffer);
+    const data = { text: await extractPdfText(req.file.buffer) };
 
     const ExcelJS = await import("exceljs");
     const workbook = new ExcelJS.Workbook();
@@ -570,9 +609,7 @@ router.post("/pdf/to-ppt", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) return sendError(res, 400, "No PDF file provided.");
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const pdfParsePpt = require("pdf-parse") as (buf: Buffer) => Promise<{ text: string }>;
-    const data = await pdfParsePpt(req.file.buffer);
+    const data = { text: await extractPdfText(req.file.buffer) };
 
     const PptxGenJS = (await import("pptxgenjs")).default;
     const pptx = new PptxGenJS();
