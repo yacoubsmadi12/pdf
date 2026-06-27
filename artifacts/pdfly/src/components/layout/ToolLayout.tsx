@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'wouter';
-import { ShieldCheck, ChevronLeft } from 'lucide-react';
+import { ShieldCheck, ChevronLeft, Sun, Moon } from 'lucide-react';
 import { AdSlot } from '../shared/AdSlot';
+import { useTheme } from '@/hooks/use-theme';
 
 interface ToolLayoutProps {
   title: string;
@@ -10,6 +11,7 @@ interface ToolLayoutProps {
 }
 
 export function ToolLayout({ title, description, children }: ToolLayoutProps) {
+  const { theme, toggle } = useTheme();
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <header className="border-b bg-card">
@@ -23,6 +25,13 @@ export function ToolLayout({ title, description, children }: ToolLayoutProps) {
               <span className="bg-primary text-primary-foreground p-1 rounded-md">PDF</span>ly
             </Link>
           </div>
+          <button
+            onClick={toggle}
+            aria-label="Toggle dark mode"
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted transition-colors"
+          >
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
         </div>
       </header>
 

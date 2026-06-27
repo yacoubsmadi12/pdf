@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link } from 'wouter';
 import { useListTools } from '@workspace/api-client-react';
-import { Search } from 'lucide-react';
+import { Search, Sun, Moon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { AdSlot } from '@/components/shared/AdSlot';
 import { ShieldCheck } from 'lucide-react';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function Home() {
   const { data: tools } = useListTools();
   const [search, setSearch] = React.useState('');
+  const { theme, toggle } = useTheme();
 
   const filteredTools = tools?.filter(t => 
     t.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -22,6 +24,13 @@ export default function Home() {
           <Link href="/" className="font-bold text-2xl tracking-tight text-primary flex items-center gap-2">
             <span className="bg-primary text-primary-foreground p-1 rounded-md">PDF</span>ly
           </Link>
+          <button
+            onClick={toggle}
+            aria-label="Toggle dark mode"
+            className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background hover:bg-muted transition-colors"
+          >
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
         </div>
       </header>
 
