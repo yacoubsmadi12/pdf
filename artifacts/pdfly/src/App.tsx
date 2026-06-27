@@ -21,6 +21,9 @@ import ProtectPdfPage from "@/pages/protect";
 import ExtractImagesPage from "@/pages/extract-images";
 import PdfToJpgPage from "@/pages/pdf-to-jpg";
 import JpgToPdfPage from "@/pages/jpg-to-pdf";
+import AboutPage from "@/pages/about";
+import PrivacyPage from "@/pages/privacy";
+import TermsPage from "@/pages/terms";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +46,9 @@ function Router() {
       <Route path="/extract-images" component={ExtractImagesPage} />
       <Route path="/pdf-to-jpg" component={PdfToJpgPage} />
       <Route path="/jpg-to-pdf" component={JpgToPdfPage} />
+      <Route path="/about" component={AboutPage} />
+      <Route path="/privacy" component={PrivacyPage} />
+      <Route path="/terms" component={TermsPage} />
       <Route component={NotFound} />
     </Switch>
   );

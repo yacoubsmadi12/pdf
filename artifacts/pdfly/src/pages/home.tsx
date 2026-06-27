@@ -86,9 +86,10 @@ export default function Home() {
           <div className="w-full h-px bg-border max-w-xl" />
           <div className="text-center text-sm text-muted-foreground space-y-4">
             <p>&copy; {new Date().getFullYear()} PDFly. All rights reserved.</p>
-            <div className="flex gap-4 justify-center">
-              <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
+            <div className="flex gap-4 justify-center flex-wrap">
+              <Link href="/about" className="hover:text-foreground transition-colors">About Developer</Link>
+              <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
             </div>
           </div>
         </div>
