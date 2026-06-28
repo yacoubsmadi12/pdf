@@ -9,10 +9,13 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 
+const execAsync = promisify(exec);
+
 // ─── PDF text extraction ──────────────────────────────────────────────────────
 async function extractPdfText(buffer: Buffer): Promise<string> {
-  // Primary: pdftotext (poppler-utils) — fast, reliable, no browser deps
-  try {
+  // Primary: pdftotext (poppler-utils) — available on Linux dev servers
+  const hasPdfToText = await execAsync("which pdftotext").then(() => true).catch(() => false);
+  if (hasPdfToText) {
     const tmpFile = path.join(os.tmpdir(), `pdf-${Date.now()}-${Math.random().toString(36).slice(2)}.pdf`);
     await fs.promises.writeFile(tmpFile, buffer);
     try {
@@ -21,38 +24,36 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
     } finally {
       fs.promises.unlink(tmpFile).catch(() => {});
     }
-  } catch {
-    // Fallback: pdfjs-dist (works in serverless environments without pdftotext)
-    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs" as any);
-    // Point workerSrc to the actual worker file relative to this module
-    const workerUrl = new URL(
-      "../node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs",
-      import.meta.url,
-    );
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl.href;
-    const data = new Uint8Array(buffer);
-    const loadingTask = pdfjsLib.getDocument({
-      data,
-      verbosity: 0,
-      useWorkerFetch: false,
-      isEvalSupported: false,
-      useSystemFonts: true,
-    });
-    const pdfDoc = await loadingTask.promise;
-    let fullText = "";
-    for (let i = 1; i <= pdfDoc.numPages; i++) {
-      const page = await pdfDoc.getPage(i);
-      const content = await page.getTextContent();
-      const pageText = content.items
-        .map((item: any) => ("str" in item ? item.str : ""))
-        .join(" ");
-      fullText += pageText + "\n";
-    }
-    return fullText;
   }
+
+  // Fallback: pdfjs-dist — works in serverless environments (Vercel, etc.)
+  const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs" as any);
+  // Use require.resolve to find the worker file regardless of environment
+  const workerPath: string = (globalThis as any).require.resolve(
+    "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
+  );
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `file://${workerPath}`;
+  const data = new Uint8Array(buffer);
+  const loadingTask = pdfjsLib.getDocument({
+    data,
+    verbosity: 0,
+    useWorkerFetch: false,
+    isEvalSupported: false,
+    useSystemFonts: true,
+  });
+  const pdfDoc = await loadingTask.promise;
+  let fullText = "";
+  for (let i = 1; i <= pdfDoc.numPages; i++) {
+    const page = await pdfDoc.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items
+      .map((item: any) => ("str" in item ? item.str : ""))
+      .join(" ");
+    fullText += pageText + "\n";
+  }
+  return fullText;
 }
 
-const execAsync = promisify(exec);
 const router = Router();
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB

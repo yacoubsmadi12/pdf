@@ -156,6 +156,10 @@ overrides:
 importers:
 
   .:
+    dependencies:
+      pdfjs-dist:
+        specifier: ^5.4.296
+        version: 5.4.296
     devDependencies:
       prettier:
         specifier: ^3.8.4
