@@ -3,6 +3,7 @@ import { ToolLayout } from '@/components/layout/ToolLayout';
 import { FileDropZone } from '@/components/shared/FileDropZone';
 import { ProgressBar } from '@/components/shared/ProgressBar';
 import { DownloadResult } from '@/components/shared/DownloadResult';
+import { AdSlot } from '@/components/shared/AdSlot';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -54,6 +55,8 @@ export default function GenericToolPage({
     return (
       <ToolLayout title={title} description={description}>
         <DownloadResult url={result.url} filename={result.filename} onReset={() => {setResult(null); setFile(null);}} />
+        {/* Ad #6 — Below the Download button */}
+        <AdSlot key="ad-download" slot="3163916627" format="auto" fullWidthResponsive />
       </ToolLayout>
     );
   }
@@ -61,7 +64,11 @@ export default function GenericToolPage({
   return (
     <ToolLayout title={title} description={description}>
       {!file ? (
-        <FileDropZone accept={accept} onFilesSelected={(files) => setFile(files[0])} />
+        <>
+          {/* Ad #4 — Above the upload area */}
+          <AdSlot key="ad-upload" slot="8210183578" layout="in-article" format="fluid" textAlign="center" />
+          <FileDropZone accept={accept} onFilesSelected={(files) => setFile(files[0])} />
+        </>
       ) : (
         <div className="w-full max-w-xl mx-auto space-y-6">
           <div className="p-4 bg-muted/20 border rounded-lg text-center font-medium">
@@ -69,9 +76,13 @@ export default function GenericToolPage({
           </div>
           
           {isProcessing ? (
-            <div className="p-8 bg-card border rounded-xl shadow-sm">
-              <ProgressBar progress={60} label="Processing..." />
-            </div>
+            <>
+              <div className="p-8 bg-card border rounded-xl shadow-sm">
+                <ProgressBar progress={60} label="Processing..." />
+              </div>
+              {/* Ad #5 — After uploading, while waiting */}
+              <AdSlot key="ad-processing" slot="4476998296" format="auto" fullWidthResponsive />
+            </>
           ) : (
             <form onSubmit={handleProcess} className="space-y-6 bg-card border p-6 rounded-xl shadow-sm">
               {extraFields}

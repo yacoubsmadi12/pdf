@@ -1,0 +1,128 @@
+I have a PDF tools website. I need you to integrate 6 Google AdSense 
+ad units into the codebase. Here are the exact ad codes and where 
+each one goes:
+
+---
+
+1. ABOVE THE TOOLS (Homepage - right before the tools grid section):
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1493226158255742"
+     crossorigin="anonymous"></script>
+<!-- Above the tools -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1493226158255742"
+     data-ad-slot="4179017768"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+---
+
+2. AMIDST THE ROWS OF TOOLS (Homepage - inserted between the tool 
+cards, after the first row of tools):
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1493226158255742"
+     crossorigin="anonymous"></script>
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-format="fluid"
+     data-ad-layout-key="-6t+ed+2i-1n-4w"
+     data-ad-client="ca-pub-1493226158255742"
+     data-ad-slot="2674364407"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+---
+
+3. BOTTOM OF THE PAGE (Homepage - right before the closing </body> 
+or in the footer section):
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1493226158255742"
+     crossorigin="anonymous"></script>
+<!-- Bottom of the page -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1493226158255742"
+     data-ad-slot="1393493784"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+---
+
+4. ABOVE THE UPLOAD BUTTON (Every tool page - placed just above the 
+file upload area/button on each tool page):
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1493226158255742"
+     crossorigin="anonymous"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-1493226158255742"
+     data-ad-slot="8210183578"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+---
+
+5. AFTER UPLOADING THE FILE AND WAITING (Every tool page - shown 
+after the user uploads a file and the processing begins, while 
+they are waiting for the result):
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1493226158255742"
+     crossorigin="anonymous"></script>
+<!-- After uploading the file and waiting... -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1493226158255742"
+     data-ad-slot="4476998296"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+---
+
+6. BELOW THE DOWNLOAD BUTTON (Every tool page - placed right after 
+the download button appears when the file is ready):
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1493226158255742"
+     crossorigin="anonymous"></script>
+<!-- Below the Download button -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-1493226158255742"
+     data-ad-slot="3163916627"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+---
+
+IMPORTANT INSTRUCTIONS:
+- Do NOT load the AdSense script more than once. Add this line 
+  ONCE in the <head> of the page:
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1493226158255742" crossorigin="anonymous"></script>
+  Then use only the <ins> and push() parts in the body.
+
+- Ad #5 should only appear AFTER the user uploads a file 
+  (show it conditionally when processing state is active).
+
+- Ad #6 should only appear AFTER the download button is visible 
+  (show it conditionally when result is ready).
+
+- Make sure ads don't break the existing layout. Wrap each ad 
+  in a div with style="width:100%; margin: 16px 0;"
+
+- Apply these changes to ALL tool pages, not just one.

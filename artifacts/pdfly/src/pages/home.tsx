@@ -17,6 +17,9 @@ export default function Home() {
     t.description.toLowerCase().includes(search.toLowerCase())
   );
 
+  const firstRow = filteredTools?.slice(0, 4) ?? [];
+  const remainingRows = filteredTools?.slice(4) ?? [];
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <header className="border-b bg-card">
@@ -54,14 +57,15 @@ export default function Home() {
         </section>
 
         <div className="container mx-auto px-4 py-8 flex flex-col items-center">
-          <AdSlot type="banner" />
-          
-          <div className="w-full max-w-6xl mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {filteredTools?.map(tool => (
+
+          {/* Ad #1 — Above the tools grid */}
+          <AdSlot slot="4179017768" format="auto" fullWidthResponsive />
+
+          <div className="w-full max-w-6xl mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {firstRow.map(tool => (
               <Link key={tool.id} href={tool.route}>
                 <div className="group h-full p-6 bg-card border rounded-xl shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer flex flex-col items-start gap-4">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                    {/* Placeholder for real lucide icons based on tool.icon string */}
                     <span className="font-bold text-lg">{tool.icon.substring(0, 2).toUpperCase()}</span>
                   </div>
                   <div>
@@ -72,8 +76,37 @@ export default function Home() {
               </Link>
             ))}
           </div>
-          
-          <AdSlot type="responsive" className="mt-12" />
+
+          {/* Ad #2 — Amidst the rows of tools (after first row) */}
+          {remainingRows.length > 0 && (
+            <AdSlot
+              slot="2674364407"
+              format="fluid"
+              layoutKey="-6t+ed+2i-1n-4w"
+              className="w-full max-w-6xl"
+            />
+          )}
+
+          {remainingRows.length > 0 && (
+            <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {remainingRows.map(tool => (
+                <Link key={tool.id} href={tool.route}>
+                  <div className="group h-full p-6 bg-card border rounded-xl shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-pointer flex flex-col items-start gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <span className="font-bold text-lg">{tool.icon.substring(0, 2).toUpperCase()}</span>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg mb-2">{tool.name}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{tool.description}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {/* Ad #3 — Bottom of the page */}
+          <AdSlot slot="1393493784" format="auto" fullWidthResponsive className="mt-8" />
         </div>
       </main>
 
