@@ -28,11 +28,10 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
 
   // Fallback: pdfjs-dist — works in serverless environments (Vercel, etc.)
   const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs" as any);
-  // Use require.resolve to find the worker file regardless of environment
-  const workerPath: string = (globalThis as any).require.resolve(
-    "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
-  );
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `file://${workerPath}`;
+  // The worker is copied to the same directory as handler.mjs during build,
+  // so it's always available at ./pdf.worker.mjs relative to this module.
+  const workerUrl = new URL("./pdf.worker.mjs", import.meta.url);
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl.href;
   const data = new Uint8Array(buffer);
   const loadingTask = pdfjsLib.getDocument({
     data,

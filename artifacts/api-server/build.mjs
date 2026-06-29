@@ -3,7 +3,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { build as esbuild } from "esbuild";
 import esbuildPluginPino from "esbuild-plugin-pino";
-import { rm } from "node:fs/promises";
+import { rm, copyFile } from "node:fs/promises";
 
 // Plugins (e.g. 'esbuild-plugin-pino') may use `require` to resolve dependencies
 globalThis.require = createRequire(import.meta.url);
@@ -39,7 +39,7 @@ async function buildAll() {
       "realm", "ref-napi", "rocksdb", "sass-embedded", "sequelize",
       "serialport", "snappy", "tinypool", "usb", "workerd", "wrangler",
       "zeromq", "zeromq-prebuilt", "playwright", "puppeteer", "puppeteer-core",
-      "electron", "pdfjs-dist", "pdf-parse",
+      "electron", "pdf-parse",
     ],
     sourcemap: false,
     banner: {
@@ -53,6 +53,15 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
     `,
     },
   });
+
+  // Copy pdfjs-dist worker file into api/ so it is deployed alongside handler.mjs on Vercel
+  // This guarantees the worker is resolvable via new URL('./pdf.worker.mjs', import.meta.url)
+  const pdfjsWorkerSrc = globalThis.require.resolve(
+    "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
+  );
+  const pdfjsWorkerDest = path.resolve(workspaceRoot, "api/pdf.worker.mjs");
+  await copyFile(pdfjsWorkerSrc, pdfjsWorkerDest);
+  console.log("Copied pdfjs worker →", pdfjsWorkerDest);
 
   // Build the main server entry (with listen())
   await esbuild({
